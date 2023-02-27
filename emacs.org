@@ -4,16 +4,16 @@
 * TODO
 - [ ] replace company with [[https://github.com/minad/corfu][consult]]
 - [ ] project.el (builtin) - project management
-- [ ] [[https://github.com/nex3/perspective-el][perspective.el]] - only show buffers that belong to a project
-- [ ] [[https://github.com/protesilaos/denote][denote]] for notetaking
-- [ ] org mode configuration
+- [ ] [[https://github.com/nex3/perspective-el][perspective.el]] - only show buffers that belong to a project. =X-x p b= (=project-switch-to-buffer=) already seem to do this. Not sure why we would need perspective.el.
 - [ ] remove references to counsel -> replace with [[https://github.com/minad/consult][consult]] alternatives
+- [ ] GTD configuration
+- [ ] denote, ceate shortcuts for notes and journals. See examples on website of package.
 
 * General information
 
 #+begin_src emacs-lisp
 
-  ;; NOTE: init.el is generated from emacs.org
+  ;; NOTE: init.el is generated from this emacs.org
   ;;
   ;; This configuration is heavily inspired by System Crafters Emacs from Scratch series
 
@@ -25,7 +25,7 @@
 
   ;; Easily change the font size and transparance, e.g. for use on monitors with different resolutions
   (defvar ijskegel/default-font-size 90)
-  (defvar ijskegel/default-variable-font-size 90)
+  (defvar ijskegel/default-variable-font-size 100)
   (defvar ijskegel/frame-transparency '(100 . 100))
 
 #+end_src
@@ -144,10 +144,10 @@ I am using the [[https://www.nerdfonts.com/][JetBrains Mono Nerd]] and [[https:/
 #+begin_src emacs-lisp
 
   ;; Set the default face
-  (set-face-attribute 'default nil :family "JetBrainsMono Nerd Font" :height ijskegel/default-font-size :weight 'regular)
+  (set-face-attribute 'default nil :family "JetBrainsMono NF" :height ijskegel/default-font-size :weight 'regular)
 
   ;; Set the fixed pitch face
-  (set-face-attribute 'fixed-pitch nil :font "JetBrainsMono Nerd Font" :height ijskegel/default-font-size :weight 'regular)
+  (set-face-attribute 'fixed-pitch nil :font "JetBrainsMono NF" :height ijskegel/default-font-size :weight 'regular)
 
   ;; Set the variable pitch face
   (set-face-attribute 'variable-pitch nil :font "Cantarell" :height ijskegel/default-variable-font-size)
@@ -373,41 +373,21 @@ This configuration uses [[https://evil.readthedocs.io/en/latest/index.html][evil
 
 [[https://orgmode.org/][Org Mode]] is one of the hallmark features of Emacs.  It is a rich document editor, project planner, task and time tracker, blogging engine, and literate coding utility all wrapped up in one package.
 
-** Better Font Faces
-
-The =ijskegel/org-font-setup= function configures various text faces to tweak the sizes of headings and use variable width fonts in most cases so that it looks more like we're editing a document in =org-mode=.  We switch back to fixed width (monospace) fonts for code blocks and tables so that they display correctly.
+** Basic config
+This section contains the basic configuration for =org-mode= plus the configuration for Org agendas and capture templates.
 
 #+begin_src emacs-lisp
 
-  (defun ijskegel/org-font-setup ()
-    ;; Replace list hyphen with dot
-    (font-lock-add-keywords 'org-mode
-                            '(("^ *\\([-]\\) "
-                               (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
+  (defun ijskegel/org-mode-setup ()
+    (org-indent-mode)
+    (visual-line-mode 1))
 
-    ;; Set faces for heading levels
-    (dolist (face '((org-level-1 . 1.2)
-                    (org-level-2 . 1.1)
-                    (org-level-3 . 1.05)
-                    (org-level-4 . 1.0)
-                    (org-level-5 . 1.1)
-                    (org-level-6 . 1.1)
-                    (org-level-7 . 1.1)
-                    (org-level-8 . 1.1)))
-      (set-face-attribute (car face) nil :font "Cantarell" :weight 'regular :height (cdr face)))
-
-    ;; Ensure that anything that should be fixed-pitch in Org files appears that way
-    (set-face-attribute 'org-block nil    :foreground nil :inherit 'fixed-pitch)
-    (set-face-attribute 'org-table nil    :inherit 'fixed-pitch)
-    (set-face-attribute 'org-formula nil  :inherit 'fixed-pitch)
-    (set-face-attribute 'org-code nil     :inherit '(shadow fixed-pitch))
-    (set-face-attribute 'org-table nil    :inherit '(shadow fixed-pitch))
-    (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
-    (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
-    (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
-    (set-face-attribute 'org-checkbox nil  :inherit 'fixed-pitch)
-    (set-face-attribute 'line-number nil :inherit 'fixed-pitch)
-    (set-face-attribute 'line-number-current-line nil :inherit 'fixed-pitch))
+  (use-package org
+    :pin org
+    :commands (org-capture org-agenda)
+    :hook (org-mode . ijskegel/org-mode-setup)
+    :config
+    (setq org-ellipsis " ▾"))
 
 #+end_src
 
@@ -433,6 +413,29 @@ The =ijskegel/org-font-setup= function configures various text faces to tweak th
     (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
 
 #+End_src
+
+** Center Org Buffers
+
+We use [[https://github.com/joostkremers/visual-fill-column][visual-fill-column]] to center =org-mode= buffers for a more pleasing writing experience as it centers the contents of the buffer horizontally to seem more like you are editing a document.  This is really a matter of personal preference so you can remove the block below if you don't like the behavior.
+
+#+begin_src emacs-lisp
+
+  (defun ijskegel/org-mode-visual-fill ()
+    (setq visual-fill-column-width 120
+          visual-fill-column-center-text t)
+    (visual-fill-column-mode 1))
+
+  (use-package visual-fill-column
+    :hook (org-mode . ijskegel/org-mode-visual-fill))
+
+#+end_src
+
+** Getting Things Done
+Below is the configuration used for my implementation of the Gettings Done Method from David Allen
+
+#+begin_src emacs-lisp
+
+#+end_src
 
 ** Structure Templates
 
@@ -586,8 +589,46 @@ Dired is a built-in file manager for Emacs that does some pretty amazing things!
 
 #+end_src
 
+* Notetaking
+For taking notes I use the [[https://protesilaos.com/emacs/denote][denote]] package from prot. There is a difference between notes and journals, each end up in their respective directory.
+
+  #+begin_src emacs-lisp
+
+    (use-package denote)
+    (setq denote-directory (expand-file-name "/media/sf_Notes/notes"))
+    (setq denote-known-keywords '("emacs" "benchmark" "asml" "tc"))
+    ;; default is org, others are markdown+(TOML, YAML) and plain text
+    (setq denote-file-type nil)
+    (add-hook 'denote-dired-mode-hook #'denote-dired-mode)
+
+  #+end_src
+
+
+Another usefull small package is [[https://protesilaos.com/emacs/tmr][tmr]] from prot. I use it to restrict my time spend on reading and restructuring my notes
+
+  #+begin_src emacs-lisp :tangle no
+
+    (use-package tmr)
+    (setq tmr-sound-file nil)
+    (setq tmr-notification-urgency 'normal)
+
+  #+end_src
 
 * Development
+** Google C/C++ Style
+Automatically load the Google C/C++ Style that we are using in the Benchmark ASML Thin Client project
+
+*** Keybindings
+=C-x h= select the entire buffer
+=C-M-\= ident region
+
+*** Configuration
+#+begin_src emacs-lisp
+
+  (load-file "~/.emacs.d/google-c-style.el")
+  (add-hook 'c-mode-common-hook 'google-set-c-style)
+
+#+end_src
 
 ** company
 
@@ -656,10 +697,9 @@ For creation the compile_commands.json you can create 'bear'. Refer to [[https:/
 
 #+end_src
  
-
 * Server
 
-When starting emacs start it in server mode and add. Add a hook to make sure to bring the emacs window to the front when starting emacsclient
+When starting emacs start it in server mode and add a hook to make sure to bring the emacs window to the front when starting emacsclient.
 
 #+begin_src emacs-lisp
 

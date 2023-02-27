@@ -1,10 +1,10 @@
-;; NOTE: init.el is generated from emacs.org
+;; NOTE: init.el is generated from this emacs.org
 ;;
 ;; This configuration is heavily inspired by System Crafters Emacs from Scratch series
 
 ;; Easily change the font size and transparance, e.g. for use on monitors with different resolutions
 (defvar ijskegel/default-font-size 90)
-(defvar ijskegel/default-variable-font-size 90)
+(defvar ijskegel/default-variable-font-size 100)
 (defvar ijskegel/frame-transparency '(100 . 100))
 
 ;; Initialize package sources
@@ -81,10 +81,10 @@
   (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
 ;; Set the default face
-(set-face-attribute 'default nil :family "JetBrainsMono Nerd Font" :height ijskegel/default-font-size :weight 'regular)
+(set-face-attribute 'default nil :family "JetBrainsMono NF" :height ijskegel/default-font-size :weight 'regular)
 
 ;; Set the fixed pitch face
-(set-face-attribute 'fixed-pitch nil :font "JetBrainsMono Nerd Font" :height ijskegel/default-font-size :weight 'regular)
+(set-face-attribute 'fixed-pitch nil :font "JetBrainsMono NF" :height ijskegel/default-font-size :weight 'regular)
 
 ;; Set the variable pitch face
 (set-face-attribute 'variable-pitch nil :font "Cantarell" :height ijskegel/default-variable-font-size)
@@ -210,35 +210,16 @@ Repeated invocations toggle between the two most recently opened buffers."
 
 (global-set-key (kbd "M-o") #'ijskegel/switch-to-last-buffer)
 
-(defun ijskegel/org-font-setup ()
-  ;; Replace list hyphen with dot
-  (font-lock-add-keywords 'org-mode
-                          '(("^ *\\([-]\\) "
-                             (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
+(defun ijskegel/org-mode-setup ()
+  (org-indent-mode)
+  (visual-line-mode 1))
 
-  ;; Set faces for heading levels
-  (dolist (face '((org-level-1 . 1.2)
-                  (org-level-2 . 1.1)
-                  (org-level-3 . 1.05)
-                  (org-level-4 . 1.0)
-                  (org-level-5 . 1.1)
-                  (org-level-6 . 1.1)
-                  (org-level-7 . 1.1)
-                  (org-level-8 . 1.1)))
-    (set-face-attribute (car face) nil :font "Cantarell" :weight 'regular :height (cdr face)))
-
-  ;; Ensure that anything that should be fixed-pitch in Org files appears that way
-  (set-face-attribute 'org-block nil    :foreground nil :inherit 'fixed-pitch)
-  (set-face-attribute 'org-table nil    :inherit 'fixed-pitch)
-  (set-face-attribute 'org-formula nil  :inherit 'fixed-pitch)
-  (set-face-attribute 'org-code nil     :inherit '(shadow fixed-pitch))
-  (set-face-attribute 'org-table nil    :inherit '(shadow fixed-pitch))
-  (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
-  (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
-  (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
-  (set-face-attribute 'org-checkbox nil  :inherit 'fixed-pitch)
-  (set-face-attribute 'line-number nil :inherit 'fixed-pitch)
-  (set-face-attribute 'line-number-current-line nil :inherit 'fixed-pitch))
+(use-package org
+  :pin org
+  :commands (org-capture org-agenda)
+  :hook (org-mode . ijskegel/org-mode-setup)
+  :config
+  (setq org-ellipsis " ▾"))
 
 (global-set-key (kbd "C-c l") #'org-store-link)
 (global-set-key (kbd "C-c a") #'org-agenda)
@@ -248,6 +229,16 @@ Repeated invocations toggle between the two most recently opened buffers."
   :hook (org-mode . org-bullets-mode)
   :custom
   (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
+
+(defun ijskegel/org-mode-visual-fill ()
+  (setq visual-fill-column-width 120
+        visual-fill-column-center-text t)
+  (visual-fill-column-mode 1))
+
+(use-package visual-fill-column
+  :hook (org-mode . ijskegel/org-mode-visual-fill))
+
+
 
 (with-eval-after-load 'org
   ;; This is needed as of Org 9.2
@@ -294,6 +285,16 @@ Repeated invocations toggle between the two most recently opened buffers."
 
 (use-package dired-single
   :commands (dired dired-jump))
+
+(use-package denote)
+(setq denote-directory (expand-file-name "/media/sf_Notes/notes"))
+(setq denote-known-keywords '("emacs" "benchmark" "asml" "tc"))
+;; default is org, others are markdown+(TOML, YAML) and plain text
+(setq denote-file-type nil)
+(add-hook 'denote-dired-mode-hook #'denote-dired-mode)
+
+(load-file "~/.emacs.d/google-c-style.el")
+(add-hook 'c-mode-common-hook 'google-set-c-style)
 
 (use-package company
   :config
