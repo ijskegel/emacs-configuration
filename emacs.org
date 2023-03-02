@@ -7,6 +7,7 @@
 - [ ] [[https://github.com/nex3/perspective-el][perspective.el]] - only show buffers that belong to a project. =X-x p b= (=project-switch-to-buffer=) already seem to do this. Not sure why we would need perspective.el.
 - [ ] remove references to counsel -> replace with [[https://github.com/minad/consult][consult]] alternatives
 - [ ] denote, ceate shortcuts for notes and journals. See examples on website of package.
+- [ ] Add windows/linux specifig config (fonts, paths, etc.)
 
 * General information
 
@@ -99,40 +100,43 @@ This section configures basic UI settings that remove unneeded elements to make 
 
 #+begin_src emacs-lisp
 
-    (setq inhibit-startup-message t)
+  (setq inhibit-startup-message t)
 
-    (scroll-bar-mode -1)        ; Disable visible scrollbar
-    (tool-bar-mode -1)          ; Disable the toolbar
-    (tooltip-mode -1)           ; Disable tooltips
-    (set-fringe-mode 10)        ; Give some breathing room
-    (blink-cursor-mode 0)       ; Do not blink the cursor
-    (menu-bar-mode -1)          ; Disable the menu bar
+  (scroll-bar-mode -1)        ; Disable visible scrollbar
+  (tool-bar-mode -1)          ; Disable the toolbar
+  (tooltip-mode -1)           ; Disable tooltips
+  (set-fringe-mode 10)        ; Give some breathing room
+  (blink-cursor-mode 0)       ; Do not blink the cursor
+  (menu-bar-mode -1)          ; Disable the menu bar
 
-    ;; Set up the visible bell
-    (setq visible-bell t)
+  ;; Set up the visible bell
+  (setq visible-bell t)
 
-    ;; automatically select help window, close with 'q'
-    (setq help-window-select t)
+  ;; automatically select help window, close with 'q'
+  (setq help-window-select t)
 
-    (column-number-mode)
-    (global-hl-line-mode t)
+  (column-number-mode)
+  (global-hl-line-mode t)
 
-    ;; automatically reverts the buffer when its visited file changes on disk
-    (global-auto-revert-mode t)
+  ;; automatically reverts the buffer when its visited file changes on disk
+  (global-auto-revert-mode t)
 
-    ;; Set frame transparency
-    (set-frame-parameter (selected-frame) 'alpha ijskegel/frame-transparency)
-    (add-to-list 'default-frame-alist `(alpha . ,ijskegel/frame-transparency))
-    ;; (set-frame-parameter (selected-frame) 'fullscreen 'maximized)
-    ;; (add-to-list 'default-frame-alist '(fullscreen . maximized))
+  ;; Set frame transparency
+  (set-frame-parameter (selected-frame) 'alpha ijskegel/frame-transparency)
+  (add-to-list 'default-frame-alist `(alpha . ,ijskegel/frame-transparency))
+  ;; (set-frame-parameter (selected-frame) 'fullscreen 'maximized)
+  ;; (add-to-list 'default-frame-alist '(fullscreen . maximized))
 
-    ;; Disable line numbers for some modes
-    (dolist (mode '(org-mode-hook
-		    term-mode-hook
-		    shell-mode-hook
-		    treemacs-mode-hook
-		    eshell-mode-hook))
-      (add-hook mode (lambda () (display-line-numbers-mode 0))))
+  ;; Disable line numbers for some modes
+  (dolist (mode '(org-mode-hook
+                  term-mode-hook
+                  shell-mode-hook
+                  treemacs-mode-hook
+                  eshell-mode-hook))
+    (add-hook mode (lambda () (display-line-numbers-mode 0))))
+
+  ;; use ibuffer instead of list-buffers
+  (global-set-key (kbd "C-x C-b") 'ibuffer)
 
 #+end_src
 
@@ -160,7 +164,8 @@ We use the 'ef-day' theme from the [[https://protesilaos.com/emacs/ef-themes][ef
 #+begin_src emacs-lisp
 
   (use-package ef-themes
-    :init (load-theme 'ef-day :no-confirm))
+    :init (load-theme 'ef-day :no-confirm)
+    :custom (ef-themes-region '(neutral)))
 
 #+end_src
 
@@ -302,7 +307,15 @@ Completion actions with Embark
 #+end_src
 
 * Keybinding Configuration
+** open configuration
+Two different ways to open this configuration file quickly, press =F6= or using registers =C-x r j e=
 
+#+begin_src emacs-lisp
+
+  (set-register ?e '(file . "~/.emacs.d/emacs.org"))
+  (global-set-key (kbd "<f6>") (lambda() (interactive)(find-file "~/.emacs.d/emacs.org")))
+
+#+end_src
 ** evil mode
 
 This configuration uses [[https://evil.readthedocs.io/en/latest/index.html][evil-mode]] for a Vi-like modal editing experience.  [[https://github.com/noctuid/general.el][general.el]] is used for easy keybinding configuration that integrates well with which-key.  [[https://github.com/emacs-evil/evil-collection][evil-collection]] is used to automatically configure various Emacs modes with Vi-like keybindings for evil-mode.
@@ -430,9 +443,12 @@ We use [[https://github.com/joostkremers/visual-fill-column][visual-fill-column]
 #+end_src
 
 ** Getting Things Done
-Below is the configuration used for my implementation of the Gettings Done Method from David Allen. It is based on the [[https://emacs.cafe/emacs/orgmode/gtd/2017/06/30/orgmode-gtd.html][Orgmode for GTD]] article.
+Below is the configuration used for my implementation of the Getting Things Done Method from David Allen. It is based on the [[https://emacs.cafe/emacs/orgmode/gtd/2017/06/30/orgmode-gtd.html][Orgmode for GTD]] article.
+Use jumpt to register g (=C-x r j g=) to open the GTD directory in Dired
 
 #+begin_src emacs-lisp
+
+  (set-register ?g '(file . "/media/sf_Notes/gtd"))
 
   (setq org-agenda-files '("/media/sf_Notes/gtd/inbox.org"
                            "/media/sf_Notes/gtd/gtd.org"
@@ -449,7 +465,7 @@ Below is the configuration used for my implementation of the Gettings Done Metho
                              ("/media/sf_Notes/gtd/someday.org" :level . 1)
                              ("/media/sf_Notes/gtd/tickler.org" :maxlevel . 2)))
 
-  (setq org-todo-keywords '((sequence "TODO(t)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c)")))
+  (setq org-todo-keywords '((sequence "NEXT(n)" "TODO(t)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c)")))
 
   (setq org-agenda-custom-commands 
         '(("o" "At the office" tags-todo "@office"
@@ -628,6 +644,7 @@ Dired is a built-in file manager for Emacs that does some pretty amazing things!
 
 * Notetaking
 For taking notes I use the [[https://protesilaos.com/emacs/denote][denote]] package from prot. There is a difference between notes and journals, each end up in their respective directory.
+Use jumpt to register n (=C-x r j g=) to open the notes directory in Dired
 
   #+begin_src emacs-lisp
 
@@ -637,6 +654,8 @@ For taking notes I use the [[https://protesilaos.com/emacs/denote][denote]] pack
     ;; default is org, others are markdown+(TOML, YAML) and plain text
     (setq denote-file-type nil)
     (add-hook 'denote-dired-mode-hook #'denote-dired-mode)
+
+    (set-register ?n '(file . "/media/sf_Notes/notes"))
 
   #+end_src
 

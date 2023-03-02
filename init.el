@@ -74,11 +74,14 @@
 
 ;; Disable line numbers for some modes
 (dolist (mode '(org-mode-hook
-		term-mode-hook
-		shell-mode-hook
-		treemacs-mode-hook
-		eshell-mode-hook))
+                term-mode-hook
+                shell-mode-hook
+                treemacs-mode-hook
+                eshell-mode-hook))
   (add-hook mode (lambda () (display-line-numbers-mode 0))))
+
+;; use ibuffer instead of list-buffers
+(global-set-key (kbd "C-x C-b") 'ibuffer)
 
 ;; Set the default face
 (set-face-attribute 'default nil :family "JetBrainsMono NF" :height ijskegel/default-font-size :weight 'regular)
@@ -90,7 +93,8 @@
 (set-face-attribute 'variable-pitch nil :font "Cantarell" :height ijskegel/default-variable-font-size)
 
 (use-package ef-themes
-  :init (load-theme 'ef-day :no-confirm))
+  :init (load-theme 'ef-day :no-confirm)
+  :custom (ef-themes-region '(neutral)))
 
 (use-package all-the-icons)
 
@@ -158,6 +162,9 @@
 ;; 		 (which-key--show-keymap "Embark" map nil nil 'no-paging)
 ;; 		 #'which-key--hide-popup-ignore-command)
 ;; 	       embark-become-indicator embark-action-indicator))
+
+(set-register ?e '(file . "~/.emacs.d/emacs.org"))
+(global-set-key (kbd "<f6>") (lambda() (interactive)(find-file "~/.emacs.d/emacs.org")))
 
 ;; Make ESC quit prompts
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
@@ -238,6 +245,8 @@ Repeated invocations toggle between the two most recently opened buffers."
 (use-package visual-fill-column
   :hook (org-mode . ijskegel/org-mode-visual-fill))
 
+(set-register ?g '(file . "/media/sf_Notes/gtd"))
+
 (setq org-agenda-files '("/media/sf_Notes/gtd/inbox.org"
                          "/media/sf_Notes/gtd/gtd.org"
                          "/media/sf_Notes/gtd/tickler.org"))
@@ -253,7 +262,7 @@ Repeated invocations toggle between the two most recently opened buffers."
                            ("/media/sf_Notes/gtd/someday.org" :level . 1)
                            ("/media/sf_Notes/gtd/tickler.org" :maxlevel . 2)))
 
-(setq org-todo-keywords '((sequence "TODO(t)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c)")))
+(setq org-todo-keywords '((sequence "NEXT(n)" "TODO(t)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c)")))
 
 (setq org-agenda-custom-commands 
       '(("o" "At the office" tags-todo "@office"
@@ -328,6 +337,8 @@ Repeated invocations toggle between the two most recently opened buffers."
 ;; default is org, others are markdown+(TOML, YAML) and plain text
 (setq denote-file-type nil)
 (add-hook 'denote-dired-mode-hook #'denote-dired-mode)
+
+(set-register ?n '(file . "/media/sf_Notes/notes"))
 
 (load-file "~/.emacs.d/google-c-style.el")
 (add-hook 'c-mode-common-hook 'google-set-c-style)
