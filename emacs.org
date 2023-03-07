@@ -118,6 +118,10 @@ This section configures basic UI settings that remove unneeded elements to make 
   (column-number-mode)
   (global-hl-line-mode t)
 
+  ;; show relative line numbers
+  (global-display-line-numbers-mode 1)
+  (setq display-line-numbers-type 'relative)
+
   ;; automatically reverts the buffer when its visited file changes on disk
   (global-auto-revert-mode t)
 
@@ -132,6 +136,9 @@ This section configures basic UI settings that remove unneeded elements to make 
                   term-mode-hook
                   shell-mode-hook
                   treemacs-mode-hook
+                  lisp-interaction-mode-hook
+                  dired-mode-hook
+                  ibuffer-mode-hook
                   eshell-mode-hook))
     (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
@@ -163,9 +170,9 @@ We use the 'ef-day' theme from the [[https://protesilaos.com/emacs/ef-themes][ef
 
 #+begin_src emacs-lisp
 
-  (use-package ef-themes
-    :init (load-theme 'ef-day :no-confirm)
-    :custom (ef-themes-region '(neutral)))
+    (use-package ef-themes
+      :init (load-theme 'ef-duo-light :no-confirm)
+      :custom (ef-themes-region '(neutral)))
 
 #+end_src
 
@@ -316,31 +323,20 @@ Two different ways to open this configuration file quickly, press =F6= or using 
   (global-set-key (kbd "<f6>") (lambda() (interactive)(find-file "~/.emacs.d/emacs.org")))
 
 #+end_src
+
 ** evil mode
 
-This configuration uses [[https://evil.readthedocs.io/en/latest/index.html][evil-mode]] for a Vi-like modal editing experience.  [[https://github.com/noctuid/general.el][general.el]] is used for easy keybinding configuration that integrates well with which-key.  [[https://github.com/emacs-evil/evil-collection][evil-collection]] is used to automatically configure various Emacs modes with Vi-like keybindings for evil-mode.
+This configuration uses [[https://evil.readthedocs.io/en/latest/index.html][evil-mode]] for a Vi-like modal editing experience. [[https://github.com/emacs-evil/evil-collection][evil-collection]] is used to automatically configure various Emacs modes with Vi-like keybindings for evil-mode.
 
 #+begin_src emacs-lisp
 
   ;; Make ESC quit prompts
   (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 
-  (use-package general
-    :after evil
-    :config
-    (general-create-definer ijskegel/leader-keys
-      :keymaps '(normal insert visual emacs)
-      :prefix "SPC"
-      :global-prefix "C-SPC")
-
-    (ijskegel/leader-keys
-      "t"  '(:ignore t :which-key "toggles")
-      "tt" '(counsel-load-theme :which-key "choose theme")
-      "fde" '(lambda () (interactive) (find-file (expand-file-name "~/.emacs.d/emacs.org")))))
-
   (use-package evil
+    :ensure t
     :init
-    (setq evil-want-integration t)
+    (setq evil-want-integration t) ;; optional, is set to t by default
     (setq evil-want-keybinding nil)
     (setq evil-want-C-u-scroll t)
     (setq evil-want-C-i-jump nil)
@@ -362,6 +358,7 @@ This configuration uses [[https://evil.readthedocs.io/en/latest/index.html][evil
 
   (use-package evil-collection
     :after evil
+    :ensure t
     :config
     (evil-collection-init))
 

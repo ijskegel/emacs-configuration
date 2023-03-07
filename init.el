@@ -63,6 +63,10 @@
 (column-number-mode)
 (global-hl-line-mode t)
 
+;; show relative line numbers
+(global-display-line-numbers-mode 1)
+(setq display-line-numbers-type 'relative)
+
 ;; automatically reverts the buffer when its visited file changes on disk
 (global-auto-revert-mode t)
 
@@ -77,6 +81,9 @@
                 term-mode-hook
                 shell-mode-hook
                 treemacs-mode-hook
+                lisp-interaction-mode-hook
+                dired-mode-hook
+                ibuffer-mode-hook
                 eshell-mode-hook))
   (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
@@ -93,7 +100,7 @@
 (set-face-attribute 'variable-pitch nil :font "Cantarell" :height ijskegel/default-variable-font-size)
 
 (use-package ef-themes
-  :init (load-theme 'ef-day :no-confirm)
+  :init (load-theme 'ef-duo-light :no-confirm)
   :custom (ef-themes-region '(neutral)))
 
 (use-package all-the-icons)
@@ -169,22 +176,10 @@
 ;; Make ESC quit prompts
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 
-(use-package general
-  :after evil
-  :config
-  (general-create-definer ijskegel/leader-keys
-    :keymaps '(normal insert visual emacs)
-    :prefix "SPC"
-    :global-prefix "C-SPC")
-
-  (ijskegel/leader-keys
-    "t"  '(:ignore t :which-key "toggles")
-    "tt" '(counsel-load-theme :which-key "choose theme")
-    "fde" '(lambda () (interactive) (find-file (expand-file-name "~/.emacs.d/emacs.org")))))
-
 (use-package evil
+  :ensure t
   :init
-  (setq evil-want-integration t)
+  (setq evil-want-integration t) ;; optional, is set to t by default
   (setq evil-want-keybinding nil)
   (setq evil-want-C-u-scroll t)
   (setq evil-want-C-i-jump nil)
@@ -206,6 +201,7 @@
 
 (use-package evil-collection
   :after evil
+  :ensure t
   :config
   (evil-collection-init))
 
