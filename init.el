@@ -5,7 +5,7 @@
 ;; Easily change the font size and transparance, e.g. for use on monitors with different resolutions
 (defvar ijskegel/default-font-size 90)
 (defvar ijskegel/default-variable-font-size 100)
-(defvar ijskegel/frame-transparency '(100 . 100))
+(defvar ijskegel/frame-transparency '(90 . 90))
 
 ;; Initialize package sources
 (require 'package)
@@ -99,9 +99,12 @@
 ;; Set the variable pitch face
 (set-face-attribute 'variable-pitch nil :font "Cantarell" :height ijskegel/default-variable-font-size)
 
-(use-package ef-themes
-  :init (load-theme 'ef-duo-light :no-confirm)
-  :custom (ef-themes-region '(neutral)))
+;;    (use-package ef-themes
+;;      :init (load-theme 'ef-duo-light :no-confirm)
+;;      :custom (ef-themes-region '(neutral)))
+
+(add-to-list `custom-theme-load-path "~/.emacs.d/everforest-theme")
+(load-theme 'everforest-hard-dark :no-confirm)
 
 (use-package all-the-icons)
 
@@ -241,22 +244,22 @@ Repeated invocations toggle between the two most recently opened buffers."
 (use-package visual-fill-column
   :hook (org-mode . ijskegel/org-mode-visual-fill))
 
-(set-register ?g '(file . "/media/sf_Notes/gtd"))
+(set-register ?g '(file . "/media/sf_notes/gtd"))
 
-(setq org-agenda-files '("/media/sf_Notes/gtd/inbox.org"
-                         "/media/sf_Notes/gtd/gtd.org"
-                         "/media/sf_Notes/gtd/tickler.org"))
+(setq org-agenda-files '("/media/sf_notes/gtd/inbox.org"
+                         "/media/sf_notes/gtd/gtd.org"
+                         "/media/sf_notes/gtd/tickler.org"))
 
 (setq org-capture-templates '(("t" "Todo [inbox]" entry
-                               (file+headline "/media/sf_Notes/gtd/inbox.org" "Tasks")
+                               (file+headline "/media/sf_notes/gtd/inbox.org" "Tasks")
                                "* TODO %i%?")
                               ("T" "Tickler" entry
-                               (file+headline "/media/sf_Notes/gtd/tickler.org" "Tickler")
+                               (file+headline "/media/sf_notes/gtd/tickler.org" "Tickler")
                                "* %i%? \n %U")))
 
-(setq org-refile-targets '(("/media/sf_Notes/gtd/gtd.org" :maxlevel . 3)
-                           ("/media/sf_Notes/gtd/someday.org" :level . 1)
-                           ("/media/sf_Notes/gtd/tickler.org" :maxlevel . 2)))
+(setq org-refile-targets '(("/media/sf_notes/gtd/gtd.org" :maxlevel . 2)
+                           ("/media/sf_notes/gtd/someday.org" :level . 1)
+                           ("/media/sf_notes/gtd/tickler.org" :maxlevel . 2)))
 
 (setq org-todo-keywords '((sequence "NEXT(n)" "TODO(t)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c)")))
 
@@ -328,13 +331,19 @@ Repeated invocations toggle between the two most recently opened buffers."
   :commands (dired dired-jump))
 
 (use-package denote)
-(setq denote-directory (expand-file-name "/media/sf_Notes/notes"))
+(setq denote-directory (expand-file-name "/media/sf_notes/notes"))
 (setq denote-known-keywords '("emacs" "benchmark" "asml" "tc"))
 ;; default is org, others are markdown+(TOML, YAML) and plain text
 (setq denote-file-type nil)
-(add-hook 'denote-dired-mode-hook #'denote-dired-mode)
 
-(set-register ?n '(file . "/media/sf_Notes/notes"))
+(set-register ?n '(file . "/media/sf_notes/notes"))
+
+;; Enable fontification in Dired for the notes directory and its references subdirectory
+(setq denote-dired-directories
+      (list denote-directory
+      (thread-last denote-directory (expand-file-name "references"))))
+
+(add-hook 'dired-mode-hook #'denote-dired-mode-in-directories)
 
 (load-file "~/.emacs.d/google-c-style.el")
 (add-hook 'c-mode-common-hook 'google-set-c-style)
