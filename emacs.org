@@ -632,6 +632,22 @@ To get better highlighting in source code [[https://tree-sitter.github.io/tree-s
 
 #+end_src
 
+** OpenScad
+
+Features:
+- syntax highlighting
+- basic completions, press =M-<TAB>=
+- preview rendered model in separate window, press =C-c C-c=
+- opens buffer in OpenSCAD, press =C-c C-0=
+- Export buffer with OpenSCAD (press C-c C-e)
+- Flymake support (enable flymake-mode in scad-mode buffers)
+- Org Babel support (scad source blocks)
+- lsp-mode or eglot: the openscad-lsp server can be used with scad-mode
+
+#+begin_src emacs-lisp
+  (use-package scad-mode)
+#+end_src
+
 * File Management
 
 ** Dired
