@@ -3,11 +3,7 @@
 
 * TODO
 - [ ] replace company with [[https://github.com/minad/corfu][consult]]
-- [ ] project.el (builtin) - project management
-- [ ] [[https://github.com/nex3/perspective-el][perspective.el]] - only show buffers that belong to a project. =X-x p b= (=project-switch-to-buffer=) already seem to do this. Not sure why we would need perspective.el.
 - [ ] remove references to counsel -> replace with [[https://github.com/minad/consult][consult]] alternatives
-- [ ] denote, ceate shortcuts for notes and journals. See examples on website of package.
-- [ ] Add windows/linux specifig config (fonts, paths, etc.)
 
 * General information
 
@@ -19,14 +15,34 @@
 
 #+end_src
 
-* Font settings
+* Platform specific elements
 
 #+begin_src emacs-lisp
 
-  ;; Easily change the font size and transparance, e.g. for use on monitors with different resolutions
-  (defvar ijskegel/default-font-size 90)
-  (defvar ijskegel/default-variable-font-size 100)
-  (defvar ijskegel/frame-transparency '(100 . 100))
+  (cond ((eq system-type 'gnu/linux)
+         ;; directory where I store all my notes and GTD files
+         (setq ijskegel-notes-directory "/media/sf_notes")
+         ;; font names
+         (setq ijskegel-default-font "JetBrainsMono NF")
+         (setq ijskegel-fixed-pitch-font "JetBrainsMono NF")
+         (setq ijskegel-variable-pitch-font "JetBrainsMono NF")
+         ;; Easily change the font size and transparance, e.g. for use on monitors with different resolutions
+         (defvar ijskegel/default-font-size 90)
+         (defvar ijskegel/default-variable-font-size 100)
+         (defvar ijskegel/frame-transparency '(100 . 100))
+         ))
+  (cond ((eq system-type 'windows-nt)
+         ;; directory where I store all my notes and GTD files
+         (setq ijskegel-notes-directory "c:/Users/lochep/Documents/notes")
+         ;; font names
+         (setq ijskegel-default-font "JetBrainsMono NF")
+         (setq ijskegel-fixed-pitch-font "JetBrainsMono NF")
+         (setq ijskegel-variable-pitch-font "Calibri")
+         ;; Easily change the font size and transparance, e.g. for use on monitors with different resolutions
+         (defvar ijskegel/default-font-size 75)
+         (defvar ijskegel/default-variable-font-size 100)
+         (defvar ijskegel/frame-transparency '(100 . 100))
+         ))
 
 #+end_src
 
@@ -149,18 +165,18 @@ This section configures basic UI settings that remove unneeded elements to make 
 
 ** Font Configuration
 
-I am using the [[https://www.nerdfonts.com/][JetBrains Mono Nerd]] and [[https://fonts.google.com/specimen/Cantarell][Cantarell]] fonts for this configuration which will more than likely need to be installed on your machine. Both can usually be found in the various Linux distro package managers or downloaded from the links above.
+I am using the [[https://www.nerdfonts.com/][JetBrains Mono Nerd]] and [[https://fonts.google.com/specimen/Cantarell][Cantarell]] (linux) or Calibri (windows) fonts for this configuration which will more than likely need to be installed on your machine. Both can usually be found in the various Linux distro package managers or downloaded from the links above.
 
 #+begin_src emacs-lisp
 
   ;; Set the default face
-  (set-face-attribute 'default nil :family "JetBrainsMono NF" :height ijskegel/default-font-size :weight 'regular)
+  (set-face-attribute 'default nil :family ijskegel-default-font :height ijskegel/default-font-size :weight 'regular)
 
   ;; Set the fixed pitch face
-  (set-face-attribute 'fixed-pitch nil :font "JetBrainsMono NF" :height ijskegel/default-font-size :weight 'regular)
+  (set-face-attribute 'fixed-pitch nil :font ijskegel-fixed-pitch-font :height ijskegel/default-font-size :weight 'regular)
 
   ;; Set the variable pitch face
-  (set-face-attribute 'variable-pitch nil :font "Cantarell" :height ijskegel/default-variable-font-size)
+  (set-face-attribute 'variable-pitch nil :font ijskegel-variable-pitch-font :height ijskegel/default-variable-font-size)
 
 #+end_src
 
@@ -468,22 +484,29 @@ Use jumpt to register g (=C-x r j g=) to open the GTD directory in Dired
 
 #+begin_src emacs-lisp
 
-  (set-register ?g '(file . "/media/sf_notes/gtd"))
+  (setq ijskegel-gtd-directory (expand-file-name "gtd" ijskegel-notes-directory))
 
-  (setq org-agenda-files '("/media/sf_notes/gtd/inbox.org"
-                           "/media/sf_notes/gtd/gtd.org"
-                           "/media/sf_notes/gtd/tickler.org"))
+  (set-register ?g (cons 'file ijskegel-gtd-directory))
+
+  (setq ijskegel-inbox-file (expand-file-name "inbox.org" ijskegel-gtd-directory))
+  (setq ijskegel-gtd-file (expand-file-name "gtd.org" ijskegel-gtd-directory))
+  (setq ijskegel-tickler-file (expand-file-name "tickler.org" ijskegel-gtd-directory))
+  (setq ijskegel-someday-file (expand-file-name "someday.org" ijskegel-gtd-directory))
+
+  (setq org-agenda-files (list ijskegel-inbox-file
+                               ijskegel-gtd-file
+                               ijskegel-tickler-file))
 
   (setq org-capture-templates '(("t" "Todo [inbox]" entry
-                                 (file+headline "/media/sf_notes/gtd/inbox.org" "Tasks")
+                                 (file+headline ijskegel-inbox-file "Tasks")
                                  "* TODO %i%?")
                                 ("T" "Tickler" entry
-                                 (file+headline "/media/sf_notes/gtd/tickler.org" "Tickler")
+                                 (file+headline ijskegel-tickler-file "Tickler")
                                  "* %i%? \n %U")))
 
-  (setq org-refile-targets '(("/media/sf_notes/gtd/gtd.org" :maxlevel . 2)
-                             ("/media/sf_notes/gtd/someday.org" :level . 1)
-                             ("/media/sf_notes/gtd/tickler.org" :maxlevel . 2)))
+  (setq org-refile-targets '((ijskegel-gtd-file :maxlevel . 2)
+                             (ijskegel-someday-file :level . 1)
+                             (ijskegel-tickler-file :maxlevel . 2)))
 
   (setq org-todo-keywords '((sequence "NEXT(n)" "TODO(t)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c)")))
 
@@ -683,12 +706,12 @@ Use jumpt to register n (=C-x r j g=) to open the notes directory in Dired
   #+begin_src emacs-lisp
 
     (use-package denote)
-    (setq denote-directory (expand-file-name "/media/sf_notes/notes"))
+    (setq denote-directory (expand-file-name "notes" ijskegel-notes-directory))
     (setq denote-known-keywords '("emacs" "benchmark" "asml" "tc"))
     ;; default is org, others are markdown+(TOML, YAML) and plain text
     (setq denote-file-type nil)
 
-    (set-register ?n '(file . "/media/sf_notes/notes"))
+    (set-register ?n (cons 'file denote-directory))
 
     ;; Enable fontification in Dired for the notes directory and its references subdirectory
     (setq denote-dired-directories
@@ -711,6 +734,7 @@ Another usefull small package is [[https://protesilaos.com/emacs/tmr][tmr]] from
   #+end_src
 
 * Development
+
 ** Google C/C++ Style
 Automatically load the Google C/C++ Style that we are using in the Benchmark ASML Thin Client project
 
