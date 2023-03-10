@@ -1,6 +1,6 @@
 ;; NOTE: init.el is generated from this emacs.org
 ;;
-;; This configuration is heavily inspired by System Crafters Emacs from Scratch series
+;; This configuration is inspired by System Crafters Emacs from Scratch series
 
 (cond ((eq system-type 'gnu/linux)
        ;; directory where I store all my notes and GTD files
@@ -119,30 +119,40 @@
 ;; Set the variable pitch face
 (set-face-attribute 'variable-pitch nil :font ijskegel-variable-pitch-font :height ijskegel/default-variable-font-size)
 
-(use-package modus-themes)
-(setq modus-themes-org-blocks 'gray-background
-      modus-themes-disable-other-themes t
-      modus-themes-common-palette-overrides 
-          '((border-mode-line-active bg-mode-line-active)
-            (border-mode-line-inactive bg-mode-line-inactive))
-      modus-operandi-palette-overrides
-          '((fg-main "#000000")
-            (bg-main "#faf8f5")
-            (bg-region "#efdfff")
-            (fg-region unspecified)
-            (bg-inactive "#e6e4e1")
-            (bg-hl-line "#e6e4e1")
-            (comment yellow-faint))
-      modus-vivendi-palette-overrides
-          '((fg-main "#fdf3ec")
-            (bg-main "#24242d")
-            (bg-region "#4f3d88")
-            (fg-region unspecified)
-            (bg-inactive "#2f2f3b")
-            (bg-hl-line "#2f2f3b")
-            (comment yellow-faint)
-            (string green)))
-(load-theme 'modus-operandi :no-confirm)
+;; (use-package modus-themes)
+;; (setq modus-themes-org-blocks 'gray-background
+;;       modus-themes-disable-other-themes t
+;;       modus-themes-common-palette-overrides 
+;;           '((border-mode-line-active bg-mode-line-active)
+;;             (border-mode-line-inactive bg-mode-line-inactive))
+;;       modus-operandi-palette-overrides
+;;           '((fg-main "#000000")
+;;             (bg-main "#faf8f5")
+;;             (bg-region "#efdfff")
+;;             (fg-region unspecified)
+;;             (bg-inactive "#e6e4e1")
+;;             (bg-hl-line "#e6e4e1")
+;;             (comment yellow-faint))
+;;       modus-vivendi-palette-overrides
+;;           '((fg-main "#fdf3ec")
+;;             (bg-main "#24242d")
+;;             (bg-region "#4f3d88")
+;;             (fg-region unspecified)
+;;             (bg-inactive "#2f2f3b")
+;;             (bg-hl-line "#2f2f3b")
+;;             (comment yellow-faint)
+;;             (string green)))
+;; (load-theme 'modus-operandi :no-confirm)
+
+(use-package doom-themes
+  :ensure t
+  :config
+  (load-theme 'doom-opera :no-confirm)
+
+  ;; Enable flashing mode-line on errors
+  (doom-themes-visual-bell-config)
+  ;; Corrects (and improves) org-mode's native fontification.
+  (doom-themes-org-config))
 
 (use-package all-the-icons)
 
@@ -413,3 +423,16 @@ Repeated invocations toggle between the two most recently opened buffers."
 
 (server-start)
 (add-hook 'server-switch-hook (lambda () (select-frame-set-input-focus (selected-frame))))
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(custom-safe-themes
+   '("1cae4424345f7fe5225724301ef1a793e610ae5a4e23c023076dc334a9eb940a" "443e2c3c4dd44510f0ea8247b438e834188dc1c6fb80785d83ad3628eadf9294" default)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
