@@ -5,7 +5,7 @@
 ;; Easily change the font size and transparance, e.g. for use on monitors with different resolutions
 (defvar ijskegel/default-font-size 90)
 (defvar ijskegel/default-variable-font-size 100)
-(defvar ijskegel/frame-transparency '(90 . 90))
+(defvar ijskegel/frame-transparency '(100 . 100))
 
 ;; Initialize package sources
 (require 'package)
@@ -99,12 +99,30 @@
 ;; Set the variable pitch face
 (set-face-attribute 'variable-pitch nil :font "Cantarell" :height ijskegel/default-variable-font-size)
 
-;;    (use-package ef-themes
-;;      :init (load-theme 'ef-duo-light :no-confirm)
-;;      :custom (ef-themes-region '(neutral)))
-
-(add-to-list `custom-theme-load-path "~/.emacs.d/everforest-theme")
-(load-theme 'everforest-hard-dark :no-confirm)
+(use-package modus-themes)
+(setq modus-themes-org-blocks 'gray-background
+      modus-themes-disable-other-themes t
+      modus-themes-common-palette-overrides 
+          '((border-mode-line-active bg-mode-line-active)
+            (border-mode-line-inactive bg-mode-line-inactive))
+      modus-operandi-palette-overrides
+          '((fg-main "#000000")
+            (bg-main "#faf8f5")
+            (bg-region "#efdfff")
+            (fg-region unspecified)
+            (bg-inactive "#e6e4e1")
+            (bg-hl-line "#e6e4e1")
+            (comment yellow-faint))
+      modus-vivendi-palette-overrides
+          '((fg-main "#fdf3ec")
+            (bg-main "#24242d")
+            (bg-region "#4f3d88")
+            (fg-region unspecified)
+            (bg-inactive "#2f2f3b")
+            (bg-hl-line "#2f2f3b")
+            (comment yellow-faint)
+            (string green)))
+(load-theme 'modus-operandi :no-confirm)
 
 (use-package all-the-icons)
 
@@ -316,6 +334,12 @@ Repeated invocations toggle between the two most recently opened buffers."
 
 (use-package evil-nerd-commenter
   :bind ("M-/" . evilnc-comment-or-uncomment-lines))
+
+(use-package tree-sitter)
+(use-package tree-sitter-langs)
+;; enable it globally and enable highlighting always if major mode is known in tree-sitter
+(global-tree-sitter-mode)
+(add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode)
 
 (use-package dired
   :ensure nil

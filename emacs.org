@@ -26,7 +26,7 @@
   ;; Easily change the font size and transparance, e.g. for use on monitors with different resolutions
   (defvar ijskegel/default-font-size 90)
   (defvar ijskegel/default-variable-font-size 100)
-  (defvar ijskegel/frame-transparency '(90 . 90))
+  (defvar ijskegel/frame-transparency '(100 . 100))
 
 #+end_src
 
@@ -166,16 +166,35 @@ I am using the [[https://www.nerdfonts.com/][JetBrains Mono Nerd]] and [[https:/
 
 ** Color Theme
 
-We use the 'ef-day' theme from the [[https://protesilaos.com/emacs/ef-themes][ef-themes]] collection from prot.
+We use the 'modus operandi' theme from the [[https://protesilaos.com/emacs/modus-themes][modus-themes]] collection from prot.
 
 #+begin_src emacs-lisp
 
-  ;;    (use-package ef-themes
-  ;;      :init (load-theme 'ef-duo-light :no-confirm)
-  ;;      :custom (ef-themes-region '(neutral)))
+  (use-package modus-themes)
+  (setq modus-themes-org-blocks 'gray-background
+        modus-themes-disable-other-themes t
+        modus-themes-common-palette-overrides 
+            '((border-mode-line-active bg-mode-line-active)
+              (border-mode-line-inactive bg-mode-line-inactive))
+        modus-operandi-palette-overrides
+            '((fg-main "#000000")
+              (bg-main "#faf8f5")
+              (bg-region "#efdfff")
+              (fg-region unspecified)
+              (bg-inactive "#e6e4e1")
+              (bg-hl-line "#e6e4e1")
+              (comment yellow-faint))
+        modus-vivendi-palette-overrides
+            '((fg-main "#fdf3ec")
+              (bg-main "#24242d")
+              (bg-region "#4f3d88")
+              (fg-region unspecified)
+              (bg-inactive "#2f2f3b")
+              (bg-hl-line "#2f2f3b")
+              (comment yellow-faint)
+              (string green)))
+  (load-theme 'modus-operandi :no-confirm)
 
-  (add-to-list `custom-theme-load-path "~/.emacs.d/everforest-theme")
-  (load-theme 'everforest-hard-dark :no-confirm)
 
 #+end_src
 
@@ -187,11 +206,11 @@ We use the 'ef-day' theme from the [[https://protesilaos.com/emacs/ef-themes][ef
 
 #+begin_src emacs-lisp
 
-(use-package all-the-icons)
+  (use-package all-the-icons)
 
-(use-package doom-modeline
-  :init (doom-modeline-mode 1)
-  :custom ((doom-modeline-height 15)))
+  (use-package doom-modeline
+    :init (doom-modeline-mode 1)
+    :custom ((doom-modeline-height 15)))
 
 #+end_src
 
@@ -317,6 +336,7 @@ Completion actions with Embark
 #+end_src
 
 * Keybinding Configuration
+
 ** open configuration
 Two different ways to open this configuration file quickly, press =F6= or using registers =C-x r j e=
 
@@ -556,6 +576,20 @@ Emacs' built in commenting functionality =comment-dwim= (usually bound to =M-;=)
 
   (use-package evil-nerd-commenter
     :bind ("M-/" . evilnc-comment-or-uncomment-lines))
+
+#+end_src
+
+** Tree-sitter
+
+To get better highlighting in source code [[https://tree-sitter.github.io/tree-sitter/][tree-sitter]] can be used. For emacs 29+ tree-sitter is integrated but for older versions this [[https://emacs-tree-sitter.github.io][emacs package]] can be used. You also need to install the [[https://github.com/tree-sitter/tree-sitter/releases][tree-sitter binary]] and make sure that it is in your path as descsribed in [[https://olddeuteronomy.github.io/post/a-tree-sitter-config-that-works/][A Tree Sitter Config That Works]].
+
+#+begin_src emacs-lisp
+
+  (use-package tree-sitter)
+  (use-package tree-sitter-langs)
+  ;; enable it globally and enable highlighting always if major mode is known in tree-sitter
+  (global-tree-sitter-mode)
+  (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode)
 
 #+end_src
 
