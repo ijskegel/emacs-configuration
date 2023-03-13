@@ -1,6 +1,6 @@
 ;; NOTE: init.el is generated from this emacs.org
 ;;
-;; This configuration is inspired by System Crafters Emacs from Scratch series
+;; The initial version of this configuration is inspired by System Crafters Emacs from Scratch series
 
 (cond ((eq system-type 'gnu/linux)
        ;; directory where I store all my notes and GTD files
@@ -12,7 +12,7 @@
        ;; Easily change the font size and transparance, e.g. for use on monitors with different resolutions
        (defvar ijskegel/default-font-size 90)
        (defvar ijskegel/default-variable-font-size 100)
-       (defvar ijskegel/frame-transparency '(100 . 100))
+       (defvar ijskegel/frame-transparency '(95 . 95))
        ))
 (cond ((eq system-type 'windows-nt)
        ;; directory where I store all my notes and GTD files
@@ -100,7 +100,6 @@
 (dolist (mode '(org-mode-hook
                 term-mode-hook
                 shell-mode-hook
-                treemacs-mode-hook
                 lisp-interaction-mode-hook
                 dired-mode-hook
                 ibuffer-mode-hook
@@ -298,11 +297,13 @@ Repeated invocations toggle between the two most recently opened buffers."
 
 (setq ijskegel-inbox-file (expand-file-name "inbox.org" ijskegel-gtd-directory))
 (setq ijskegel-gtd-file (expand-file-name "gtd.org" ijskegel-gtd-directory))
+(setq ijskegel-personal-file (expand-file-name "personal.org" ijskegel-gtd-directory))
 (setq ijskegel-tickler-file (expand-file-name "tickler.org" ijskegel-gtd-directory))
 (setq ijskegel-someday-file (expand-file-name "someday.org" ijskegel-gtd-directory))
 
 (setq org-agenda-files (list ijskegel-inbox-file
                              ijskegel-gtd-file
+                             ijskegel-personal-file
                              ijskegel-tickler-file))
 
 (setq org-capture-templates '(("t" "Todo [inbox]" entry
@@ -313,14 +314,18 @@ Repeated invocations toggle between the two most recently opened buffers."
                                "* %i%? \n %U")))
 
 (setq org-refile-targets '((ijskegel-gtd-file :maxlevel . 2)
+                           (ijskegel-personal-file :level . 1)
                            (ijskegel-someday-file :level . 1)
                            (ijskegel-tickler-file :maxlevel . 2)))
 
-(setq org-todo-keywords '((sequence "NEXT(n)" "TODO(t)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c)")))
+(setq org-todo-keywords '((sequence "TODO(t)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c)")))
 
 (setq org-agenda-custom-commands 
-      '(("o" "At the office" tags-todo "@office"
-         ((org-agenda-overriding-header "Office")
+      '(("w" "Work" tags-todo "@work"
+         ((org-agenda-overriding-header "Work")
+          (org-agenda-skip-function #'my-org-agenda-skip-all-siblings-but-first)))
+        ("h" "Home" tags-todo "@home"
+         ((org-agenda-overriding-header "Home")
           (org-agenda-skip-function #'my-org-agenda-skip-all-siblings-but-first)))))
 
 (defun my-org-agenda-skip-all-siblings-but-first ()
@@ -357,6 +362,8 @@ Repeated invocations toggle between the two most recently opened buffers."
 
 (add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'ijskegel/org-babel-tangle-config)))
 
+(global-set-key (kbd "<f4>") 'ff-find-other-file)
+
 (use-package magit
   :commands magit-status
   :custom
@@ -377,6 +384,8 @@ Repeated invocations toggle between the two most recently opened buffers."
 ;; enable it globally and enable highlighting always if major mode is known in tree-sitter
 (global-tree-sitter-mode)
 (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode)
+
+(use-package scad-mode)
 
 (use-package dired
   :ensure nil
@@ -423,16 +432,3 @@ Repeated invocations toggle between the two most recently opened buffers."
 
 (server-start)
 (add-hook 'server-switch-hook (lambda () (select-frame-set-input-focus (selected-frame))))
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(custom-safe-themes
-   '("1cae4424345f7fe5225724301ef1a793e610ae5a4e23c023076dc334a9eb940a" "443e2c3c4dd44510f0ea8247b438e834188dc1c6fb80785d83ad3628eadf9294" default)))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )

@@ -4,6 +4,7 @@
 * TODO
 - [ ] replace company with [[https://github.com/minad/corfu][consult]]
 - [ ] remove references to counsel -> replace with [[https://github.com/minad/consult][consult]] alternatives
+- [ ] setup embark
 
 * General information
 
@@ -11,7 +12,7 @@
 
   ;; NOTE: init.el is generated from this emacs.org
   ;;
-  ;; This configuration is inspired by System Crafters Emacs from Scratch series
+  ;; The initial version of this configuration is inspired by System Crafters Emacs from Scratch series
 
 #+end_src
 
@@ -29,7 +30,7 @@
          ;; Easily change the font size and transparance, e.g. for use on monitors with different resolutions
          (defvar ijskegel/default-font-size 90)
          (defvar ijskegel/default-variable-font-size 100)
-         (defvar ijskegel/frame-transparency '(100 . 100))
+         (defvar ijskegel/frame-transparency '(95 . 95))
          ))
   (cond ((eq system-type 'windows-nt)
          ;; directory where I store all my notes and GTD files
@@ -151,7 +152,6 @@ This section configures basic UI settings that remove unneeded elements to make 
   (dolist (mode '(org-mode-hook
                   term-mode-hook
                   shell-mode-hook
-                  treemacs-mode-hook
                   lisp-interaction-mode-hook
                   dired-mode-hook
                   ibuffer-mode-hook
@@ -495,7 +495,7 @@ We use [[https://github.com/joostkremers/visual-fill-column][visual-fill-column]
 #+end_src
 
 ** Getting Things Done
-Below is the configuration used for my implementation of the Getting Things Done Method from David Allen. It is based on the [[https://emacs.cafe/emacs/orgmode/gtd/2017/06/30/orgmode-gtd.html][Orgmode for GTD]] article.
+Below is the configuration used for my implementation of the Getting Things Done Method from David Allen. It is based on [[denote:20230228T130820][Orgmode for GTD]].
 Use jumpt to register g (=C-x r j g=) to open the GTD directory in Dired
 
 #+begin_src emacs-lisp
@@ -506,11 +506,13 @@ Use jumpt to register g (=C-x r j g=) to open the GTD directory in Dired
 
   (setq ijskegel-inbox-file (expand-file-name "inbox.org" ijskegel-gtd-directory))
   (setq ijskegel-gtd-file (expand-file-name "gtd.org" ijskegel-gtd-directory))
+  (setq ijskegel-personal-file (expand-file-name "personal.org" ijskegel-gtd-directory))
   (setq ijskegel-tickler-file (expand-file-name "tickler.org" ijskegel-gtd-directory))
   (setq ijskegel-someday-file (expand-file-name "someday.org" ijskegel-gtd-directory))
 
   (setq org-agenda-files (list ijskegel-inbox-file
                                ijskegel-gtd-file
+                               ijskegel-personal-file
                                ijskegel-tickler-file))
 
   (setq org-capture-templates '(("t" "Todo [inbox]" entry
@@ -521,14 +523,18 @@ Use jumpt to register g (=C-x r j g=) to open the GTD directory in Dired
                                  "* %i%? \n %U")))
 
   (setq org-refile-targets '((ijskegel-gtd-file :maxlevel . 2)
+                             (ijskegel-personal-file :level . 1)
                              (ijskegel-someday-file :level . 1)
                              (ijskegel-tickler-file :maxlevel . 2)))
 
-  (setq org-todo-keywords '((sequence "NEXT(n)" "TODO(t)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c)")))
+  (setq org-todo-keywords '((sequence "TODO(t)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c)")))
 
   (setq org-agenda-custom-commands 
-        '(("o" "At the office" tags-todo "@office"
-           ((org-agenda-overriding-header "Office")
+        '(("w" "Work" tags-todo "@work"
+           ((org-agenda-overriding-header "Work")
+            (org-agenda-skip-function #'my-org-agenda-skip-all-siblings-but-first)))
+          ("h" "Home" tags-todo "@home"
+           ((org-agenda-overriding-header "Home")
             (org-agenda-skip-function #'my-org-agenda-skip-all-siblings-but-first)))))
 
   (defun my-org-agenda-skip-all-siblings-but-first ()
@@ -586,6 +592,14 @@ This snippet adds a hook to =org-mode= buffers so that =ijskegel/org-babel-tangl
 #+end_src
 
 * Development
+
+** General shortcuts
+
+#+begin_src emacs-lisp
+
+  (global-set-key (kbd "<f4>") 'ff-find-other-file)
+
+#+end_src
 
 ** Magit
 
@@ -645,7 +659,9 @@ Features:
 - lsp-mode or eglot: the openscad-lsp server can be used with scad-mode
 
 #+begin_src emacs-lisp
+
   (use-package scad-mode)
+
 #+end_src
 
 * File Management
