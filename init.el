@@ -83,9 +83,14 @@
 (column-number-mode)
 (global-hl-line-mode t)
 
-;; show relative line numbers
+;; scroll behaviour more like in vim
+(setq scroll-conservatively most-positive-fixnum)
+(setq scroll-step 1)
+(setq scroll-margin 5)
+
+;; show line numbers
 (global-display-line-numbers-mode 1)
-(setq display-line-numbers-type 'relative)
+;; (setq display-line-numbers-type 'relative) enable for relative line numbers
 
 ;; automatically reverts the buffer when its visited file changes on disk
 (global-auto-revert-mode t)
@@ -95,6 +100,8 @@
 (add-to-list 'default-frame-alist `(alpha . ,ijskegel/frame-transparency))
 ;; (set-frame-parameter (selected-frame) 'fullscreen 'maximized)
 ;; (add-to-list 'default-frame-alist '(fullscreen . maximized))
+(add-to-list 'default-frame-alist '(height . 70))
+(add-to-list 'default-frame-alist '(width . 125))
 
 ;; Disable line numbers for some modes
 (dolist (mode '(org-mode-hook
@@ -106,8 +113,21 @@
                 eshell-mode-hook))
   (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
-;; use ibuffer instead of list-buffers
-(global-set-key (kbd "C-x C-b") 'ibuffer)
+;; open buffer-menu and switch to it
+(global-set-key (kbd "C-x C-b") 'buffer-menu-other-window)
+
+;; center frame on current monitor
+;; credit: https://christiantietze.de/posts/2022/04/emacs-center-window-current-monitor-simplified/
+(defun ijskegel/frame-recenter (&optional frame)
+  "Center FRAME on the screen.
+FRAME can be a frame name, a terminal name, or a frame.
+If FRAME is omitted or nil, use currently selected frame."
+  (interactive)
+  (unless (eq 'maximised (frame-parameter nil 'fullscreen))
+    (modify-frame-parameters
+     frame '((user-position . t) (top . 0.5) (left . 0.5)))))
+
+(global-set-key (kbd "M-c") #'ijskegel/frame-recenter)
 
 ;; Set the default face
 (set-face-attribute 'default nil :family ijskegel-default-font :height ijskegel/default-font-size :weight 'regular)
