@@ -16,7 +16,7 @@
        ))
 (cond ((eq system-type 'windows-nt)
        ;; directory where I store all my notes and GTD files
-       (setq ijskegel-notes-directory "c:/Users/lochep/Documents/notes")
+       (setq ijskegel-notes-directory "C:/Users/lochep/Documents/notes")
        ;; font names
        (setq ijskegel-default-font "JetBrainsMono NF")
        (setq ijskegel-fixed-pitch-font "JetBrainsMono NF")
@@ -100,7 +100,7 @@
 (add-to-list 'default-frame-alist `(alpha . ,ijskegel/frame-transparency))
 ;; (set-frame-parameter (selected-frame) 'fullscreen 'maximized)
 ;; (add-to-list 'default-frame-alist '(fullscreen . maximized))
-(add-to-list 'default-frame-alist '(height . 70))
+(add-to-list 'default-frame-alist '(height . 55))
 (add-to-list 'default-frame-alist '(width . 125))
 
 ;; Disable line numbers for some modes
@@ -113,8 +113,8 @@
                 eshell-mode-hook))
   (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
-;; open buffer-menu and switch to it
-(global-set-key (kbd "C-x C-b") 'buffer-menu-other-window)
+;; open buffer-menu in current window
+(global-set-key (kbd "C-x C-b") 'buffer-menu)
 
 ;; center frame on current monitor
 ;; credit: https://christiantietze.de/posts/2022/04/emacs-center-window-current-monitor-simplified/
@@ -382,19 +382,13 @@ Repeated invocations toggle between the two most recently opened buffers."
 
 (add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'ijskegel/org-babel-tangle-config)))
 
+;; switch between header and source file (if present)
 (global-set-key (kbd "<f4>") 'ff-find-other-file)
 
 (use-package magit
   :commands magit-status
   :custom
   (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
-
-;; NOTE: Make sure to configure a GitHub token before using this package!
-;; - https://magit.vc/manual/forge/Token-Creation.html#Token-Creation
-;; - https://magit.vc/manual/ghub/Getting-Started.html#Getting-Started
-;; Work with Git forges, such as Github and Gitlab, from the comfort of Magit and the rest of Emacs
-;;(use-package forge
-;;  :after magit)
 
 (use-package evil-nerd-commenter
   :bind ("M-/" . evilnc-comment-or-uncomment-lines))
@@ -406,6 +400,13 @@ Repeated invocations toggle between the two most recently opened buffers."
 (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode)
 
 (use-package scad-mode)
+
+(use-package dumb-jump
+  :init
+  ;; the next line requires at least Xref 1.1.0 (bundled with emacs 28.1 or newer)
+  (setq xref-show-definitions-function #'xref-show-definitions-completing-read)
+  :config
+  (add-hook 'xref-backend-functions #'dumb-jump-xref-activate))
 
 (use-package dired
   :ensure nil
