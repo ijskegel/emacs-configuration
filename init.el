@@ -138,31 +138,6 @@ If FRAME is omitted or nil, use currently selected frame."
 ;; Set the variable pitch face
 (set-face-attribute 'variable-pitch nil :font ijskegel-variable-pitch-font :height ijskegel/default-variable-font-size)
 
-;; (use-package modus-themes)
-;; (setq modus-themes-org-blocks 'gray-background
-;;       modus-themes-disable-other-themes t
-;;       modus-themes-common-palette-overrides 
-;;           '((border-mode-line-active bg-mode-line-active)
-;;             (border-mode-line-inactive bg-mode-line-inactive))
-;;       modus-operandi-palette-overrides
-;;           '((fg-main "#000000")
-;;             (bg-main "#faf8f5")
-;;             (bg-region "#efdfff")
-;;             (fg-region unspecified)
-;;             (bg-inactive "#e6e4e1")
-;;             (bg-hl-line "#e6e4e1")
-;;             (comment yellow-faint))
-;;       modus-vivendi-palette-overrides
-;;           '((fg-main "#fdf3ec")
-;;             (bg-main "#24242d")
-;;             (bg-region "#4f3d88")
-;;             (fg-region unspecified)
-;;             (bg-inactive "#2f2f3b")
-;;             (bg-hl-line "#2f2f3b")
-;;             (comment yellow-faint)
-;;             (string green)))
-;; (load-theme 'modus-operandi :no-confirm)
-
 (use-package doom-themes
   :ensure t
   :config

@@ -203,39 +203,7 @@ I am using the [[https://www.nerdfonts.com/][JetBrains Mono Nerd]] and [[https:/
 
 ** Color Theme
 
-We use the 'modus operandi' theme from the [[https://protesilaos.com/emacs/modus-themes][modus-themes]] collection from prot.
-doom-opera
-
-#+begin_src emacs-lisp
-
-  ;; (use-package modus-themes)
-  ;; (setq modus-themes-org-blocks 'gray-background
-  ;;       modus-themes-disable-other-themes t
-  ;;       modus-themes-common-palette-overrides 
-  ;;           '((border-mode-line-active bg-mode-line-active)
-  ;;             (border-mode-line-inactive bg-mode-line-inactive))
-  ;;       modus-operandi-palette-overrides
-  ;;           '((fg-main "#000000")
-  ;;             (bg-main "#faf8f5")
-  ;;             (bg-region "#efdfff")
-  ;;             (fg-region unspecified)
-  ;;             (bg-inactive "#e6e4e1")
-  ;;             (bg-hl-line "#e6e4e1")
-  ;;             (comment yellow-faint))
-  ;;       modus-vivendi-palette-overrides
-  ;;           '((fg-main "#fdf3ec")
-  ;;             (bg-main "#24242d")
-  ;;             (bg-region "#4f3d88")
-  ;;             (fg-region unspecified)
-  ;;             (bg-inactive "#2f2f3b")
-  ;;             (bg-hl-line "#2f2f3b")
-  ;;             (comment yellow-faint)
-  ;;             (string green)))
-  ;; (load-theme 'modus-operandi :no-confirm)
-
-#+end_src
-
-Trying the doom-opera theme...
+Using the doom-opera theme
 
 #+begin_src emacs-lisp
 
@@ -454,7 +422,7 @@ This configuration uses [[https://evil.readthedocs.io/en/latest/index.html][evil
 
 #+end_src
 
-* Org mode
+* Org Mode
 
 [[https://orgmode.org/][Org Mode]] is one of the hallmark features of Emacs.  It is a rich document editor, project planner, task and time tracker, blogging engine, and literate coding utility all wrapped up in one package.
 
@@ -516,6 +484,7 @@ We use [[https://github.com/joostkremers/visual-fill-column][visual-fill-column]
 #+end_src
 
 ** Getting Things Done
+
 Below is the configuration used for my implementation of the Getting Things Done Method from David Allen. It is based on [[denote:20230228T130820][Orgmode for GTD]].
 Use jumpt to register g (=C-x r j g=) to open the GTD directory in Dired
 
@@ -778,8 +747,9 @@ Dired is a built-in file manager for Emacs that does some pretty amazing things!
 #+end_src
 
 * Notetaking
+
 For taking notes I use the [[https://protesilaos.com/emacs/denote][denote]] package from prot. There is a difference between notes and journals, each end up in their respective directory.
-Use jumpt to register n (=C-x r j g=) to open the notes directory in Dired
+Use jump to register n (=C-x r j n=) to open the notes directory in Dired
 
   #+begin_src emacs-lisp
 
@@ -814,6 +784,7 @@ Another usefull small package is [[https://protesilaos.com/emacs/tmr][tmr]] from
 * Development
 
 ** Google C/C++ Style
+
 Automatically load the Google C/C++ Style that we are using in the Benchmark ASML Thin Client project
 
 *** Keybindings
@@ -842,7 +813,7 @@ Use company for code completion
 
 ** eglot
 
-Use eglot as LSP client. For now start it manually with =M-x eglot=
+Use eglot as LSP client. For now you have to start it manually with =M-x eglot=
 
 *** Project setup
 
