@@ -88,6 +88,8 @@
 (setq scroll-step 1)
 (setq scroll-margin 5)
 
+;; set the minimal width for the line numbers gutter to 4 characters
+(setq-default display-line-numbers-width 4)
 ;; show line numbers
 (global-display-line-numbers-mode 1)
 ;; (setq display-line-numbers-type 'relative) enable for relative line numbers
@@ -114,7 +116,7 @@
   (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
 ;; open buffer-menu in current window
-(global-set-key (kbd "C-x C-b") 'buffer-menu)
+;; (global-set-key (kbd "C-x C-b") 'buffer-menu)
 
 ;; center frame on current monitor
 ;; credit: https://christiantietze.de/posts/2022/04/emacs-center-window-current-monitor-simplified/
@@ -360,6 +362,10 @@ Repeated invocations toggle between the two most recently opened buffers."
 ;; switch between header and source file (if present)
 (global-set-key (kbd "<f4>") 'ff-find-other-file)
 
+;; show column indicator at 80 chars
+(setq-default display-fill-column-indicator-column 80)
+(add-hook 'prog-mode-hook #'display-fill-column-indicator-mode)
+
 (use-package magit
   :commands magit-status
   :custom
@@ -396,6 +402,11 @@ Repeated invocations toggle between the two most recently opened buffers."
 (use-package dired-single
   :commands (dired dired-jump))
 
+(use-package beframe
+ :config
+ (define-key global-map (kbd "C-x C-b") #'beframe-buffer-menu)
+ (beframe-mode 1))
+
 (use-package denote)
 (setq denote-directory (expand-file-name "notes" ijskegel-notes-directory))
 (setq denote-known-keywords '("emacs" "benchmark" "asml" "tc"))
@@ -426,5 +437,5 @@ Repeated invocations toggle between the two most recently opened buffers."
 (define-key eglot-mode-map (kbd "C-c e k ") #'flymake-goto-prev-error)
 (define-key eglot-mode-map (kbd "C-c e r ") #'eglot-rename)
 
-(server-start)
-(add-hook 'server-switch-hook (lambda () (select-frame-set-input-focus (selected-frame))))
+;; (server-start)
+;; (add-hook 'server-switch-hook (lambda () (select-frame-set-input-focus (selected-frame))))

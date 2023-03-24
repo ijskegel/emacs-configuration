@@ -2,10 +2,10 @@
 #+PROPERTY: header-args:emacs-lisp :tangle ~/.emacs.d/init.el :mkdirp yes
 
 * TODO
-- [ ] replace company with [[https://github.com/minad/corfu][consult]]
+- [ ] replace company with [[https://github.com/minad/corfu][corfu]]
 - [ ] remove references to counsel -> replace with [[https://github.com/minad/consult][consult]] alternatives
-- [ ] setup embark
-- [ ] use [[https://protesilaos.com/emacs/beframe][beframed]] for multi-frame workflow; 1 frame for GTD and documentation, other frames for projects etc. What is the benefit over using project.el buffer list (C-x p b)?
+- [ ] setup [[https://github.com/oantolin/embark][embark]]
+- [ ] use machine specific settings. Use =system-name=? I need this because the switch on system-type is not enough. I have multiple gnu/linux machines that require other settings, mainly for font names and sizes.
 
 * General information
 
@@ -141,6 +141,8 @@ This section configures basic UI settings that remove unneeded elements to make 
   (setq scroll-step 1)
   (setq scroll-margin 5)
 
+  ;; set the minimal width for the line numbers gutter to 4 characters
+  (setq-default display-line-numbers-width 4)
   ;; show line numbers
   (global-display-line-numbers-mode 1)
   ;; (setq display-line-numbers-type 'relative) enable for relative line numbers
@@ -167,7 +169,7 @@ This section configures basic UI settings that remove unneeded elements to make 
     (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
   ;; open buffer-menu in current window
-  (global-set-key (kbd "C-x C-b") 'buffer-menu)
+  ;; (global-set-key (kbd "C-x C-b") 'buffer-menu)
 
   ;; center frame on current monitor
   ;; credit: https://christiantietze.de/posts/2022/04/emacs-center-window-current-monitor-simplified/
@@ -583,12 +585,16 @@ This snippet adds a hook to =org-mode= buffers so that =ijskegel/org-babel-tangl
 
 * Development
 
-** General shortcuts
+** General configuration
 
 #+begin_src emacs-lisp
 
   ;; switch between header and source file (if present)
   (global-set-key (kbd "<f4>") 'ff-find-other-file)
+
+  ;; show column indicator at 80 chars
+  (setq-default display-fill-column-indicator-column 80)
+  (add-hook 'prog-mode-hook #'display-fill-column-indicator-mode)
 
 #+end_src
 
@@ -663,7 +669,7 @@ Features:
 
 #+end_src
 
-* File Management
+* File and Buffer Management
 
 ** Dired
 
@@ -743,6 +749,18 @@ Dired is a built-in file manager for Emacs that does some pretty amazing things!
 
   (use-package dired-single
     :commands (dired dired-jump))
+
+#+end_src
+
+** Beframe
+[[https://protesilaos.com/emacs/beframe][Beframe]] enables a frame-oriented workflow where each frame has access to the list of buffers visited therein.
+
+#+begin_src emacs-lisp
+
+  (use-package beframe
+   :config
+   (define-key global-map (kbd "C-x C-b") #'beframe-buffer-menu)
+   (beframe-mode 1))
 
 #+end_src
 
@@ -831,7 +849,7 @@ For more information see the [[https://github.com/MaskRay/ccls/wiki/Project-Setu
 
 *qMake*
 
-For creation the compile_commands.json you can create 'bear'. Refer to [[https://lahtela.me/2020/05/21/setting-up-emacs-for-qt-development.html][this page]].
+For creation the compile_commands.json you can use 'bear'. Refer to [[https://lahtela.me/2020/05/21/setting-up-emacs-for-qt-development.html][this page]].
 
 #+begin_src shell :tangle no
 
@@ -846,11 +864,11 @@ For creation the compile_commands.json you can create 'bear'. Refer to [[https:/
 
 *** Keybindings 
 
-=M-x eglot= start eglot for current buffer
-=C-c e f= initiate (company) completion
-=C-c e j= flymake-goto-next-error
-=C-c e k= flymake-goto-prev-error
-=C-c e r= rename symbol under cursor
+=M-x eglot= start eglot for current project
+=C-c <tab>= initiate (company) completion
+=C-c e j=   flymake-goto-next-error
+=C-c e k=   flymake-goto-prev-error
+=C-c e r=   rename symbol under cursor
 
 *** Actual configuration
 
@@ -870,9 +888,11 @@ For creation the compile_commands.json you can create 'bear'. Refer to [[https:/
 
 When starting emacs start it in server mode and add a hook to make sure to bring the emacs window to the front when starting emacsclient.
 
+Currently not in use since the 'emacs --daemon' is started automatically at login
+
 #+begin_src emacs-lisp
 
-  (server-start)
-  (add-hook 'server-switch-hook (lambda () (select-frame-set-input-focus (selected-frame))))
+  ;; (server-start)
+  ;; (add-hook 'server-switch-hook (lambda () (select-frame-set-input-focus (selected-frame))))
 
 #+end_src
