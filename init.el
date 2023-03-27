@@ -389,6 +389,16 @@ Repeated invocations toggle between the two most recently opened buffers."
   :config
   (add-hook 'xref-backend-functions #'dumb-jump-xref-activate))
 
+(use-package yasnippet)
+(use-package yasnippet-snippets) ;; TODO replace with only the snippets actually used
+(yas-global-mode 1)
+
+(use-package docstr)
+(global-docstr-mode 1)
+(setq docstr-c-style 'qt)
+(setq docstr-key-support t)
+(add-hook 'docstr-before-insert-hook (lambda (search-string) (insert "@brief ")))
+
 (use-package dired
   :ensure nil
   :commands (dired dired-jump)

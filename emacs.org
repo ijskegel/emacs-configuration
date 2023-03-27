@@ -669,6 +669,32 @@ Features:
 
 #+end_src
 
+** YASnippet
+
+Snippet support
+
+#+begin_src emacs-lisp
+
+  (use-package yasnippet)
+  (use-package yasnippet-snippets) ;; TODO replace with only the snippets actually used
+  (yas-global-mode 1)
+
+#+end_src
+
+** docstr
+
+[[https://github.com/emacs-vs/docstr][docstr]] supports creation of doxygen comments. The author of this package has also implemented an updated package called [[https://github.com/emacs-vs/ts-docstr][ts-docstr]], that one uses tree-sitter to fill in class/method/parameters. Unfortunately that one is not available as a package yet and needs manual install which I could not get working.
+
+#+begin_src emacs-lisp
+
+  (use-package docstr)
+  (global-docstr-mode 1)
+  (setq docstr-c-style 'qt)
+  (setq docstr-key-support t)
+  (add-hook 'docstr-before-insert-hook (lambda (search-string) (insert "@brief ")))
+  
+#+end_src
+
 * File and Buffer Management
 
 ** Dired
