@@ -217,6 +217,25 @@ If FRAME is omitted or nil, use currently selected frame."
 ;; 		 #'which-key--hide-popup-ignore-command)
 ;; 	       embark-become-indicator embark-action-indicator))
 
+(use-package popper
+  :ensure t
+  :bind (("C-`"   . popper-toggle-latest)
+         ("M-`"   . popper-cycle)
+         ("C-M-`" . popper-toggle-type))
+  :init
+  (setq popper-reference-buffers
+        '("\\*Messages\\*"
+          "Output\\*$"
+          "\\*Async Shell Command\\*"
+          "\\*Buffer List"
+          "\\*xref\\*"
+          "\\*eldoc\\*"
+          help-mode
+          compilation-mode))
+  (setq popper-window-height 30)        ; dependent on screen resolution, make machine specific!
+  (popper-mode +1)
+  (popper-echo-mode +1))                ; For echo area hints
+
 (set-register ?e '(file . "~/.emacs.d/emacs.org"))
 (global-set-key (kbd "<f6>") (lambda() (interactive)(find-file "~/.emacs.d/emacs.org")))
 

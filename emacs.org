@@ -358,6 +358,33 @@ Completion actions with Embark
 
 #+end_src
 
+** Popper
+
+[[https://github.com/karthink/popper][Popper]] helps with managing temporary windows popping up in emcas.
+
+#+begin_src emacs-lisp
+
+  (use-package popper
+    :ensure t
+    :bind (("C-`"   . popper-toggle-latest)
+           ("M-`"   . popper-cycle)
+           ("C-M-`" . popper-toggle-type))
+    :init
+    (setq popper-reference-buffers
+          '("\\*Messages\\*"
+            "Output\\*$"
+            "\\*Async Shell Command\\*"
+            "\\*Buffer List"
+            "\\*xref\\*"
+            "\\*eldoc\\*"
+            help-mode
+            compilation-mode))
+    (setq popper-window-height 30)        ; dependent on screen resolution, make machine specific!
+    (popper-mode +1)
+    (popper-echo-mode +1))                ; For echo area hints
+
+#+end_src
+
 * Keybinding Configuration
 
 ** open configuration
