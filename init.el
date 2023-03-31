@@ -385,6 +385,12 @@ Repeated invocations toggle between the two most recently opened buffers."
 (setq-default display-fill-column-indicator-column 80)
 (add-hook 'prog-mode-hook #'display-fill-column-indicator-mode)
 
+;; make sure that compilation output is colored correctly
+(require 'ansi-color)
+(defun colorize-compilation-buffer ()
+  (ansi-color-apply-on-region compilation-filter-start (point)))
+(add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
+
 (use-package magit
   :commands magit-status
   :custom
